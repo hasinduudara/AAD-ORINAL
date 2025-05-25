@@ -102,4 +102,79 @@ public class EventServlet extends HttpServlet {
             resp.getWriter().write("{\"error\": \"Error saving event: " + e.getMessage() + "\"}");
         }
     }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        resp.setContentType("application/json");
+
+        try {
+            String eid = req.getParameter("eventId");
+            String ename = req.getParameter("eventName");
+            String ediscription = req.getParameter("eventDescription");
+            String edate = req.getParameter("eventDate");
+            String eplace = req.getParameter("eventPlace");
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb", "root", "hasindu12345");
+
+            String query = "UPDATE event SET ename=?, ediscription=?, edate=?, eplace=? WHERE eid=?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, ename);
+            statement.setString(2, ediscription);
+            statement.setString(3, edate);
+            statement.setString(4, eplace);
+            statement.setString(5, eid);
+
+            int result = statement.executeUpdate();
+
+            if (result > 0) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("{\"message\": \"Event updated successfully\"}");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\": \"Failed to update event\"}");
+            }
+
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"Error updating event: " + e.getMessage() + "\"}");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        resp.setContentType("application/json");
+
+        try {
+            String eid = req.getParameter("eventId");
+
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb", "root", "hasindu12345");
+
+            String query = "DELETE FROM event WHERE eid=?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, eid);
+
+            int result = statement.executeUpdate();
+
+            if (result > 0) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("{\"message\": \"Event deleted successfully\"}");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\": \"Failed to delete event\"}");
+            }
+
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"Error deleting event: " + e.getMessage() + "\"}");
+        }
+    }
+
 }
