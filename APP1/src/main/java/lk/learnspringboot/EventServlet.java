@@ -20,37 +20,39 @@ public class EventServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.setContentType("application/json");
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb",
                     "root",
                     "hasindu12345");
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM event");
+
+            String query = "SELECT * FROM event";
+            PreparedStatement statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
-            List<Map<String, String>> elist = new ArrayList<Map<String, String>>();
+
+            List<Map<String, String>> events = new ArrayList<>();
             while (resultSet.next()) {
-                Map<String, String> event = new HashMap<String, String>();
+                Map<String, String> event = new HashMap<>();
                 event.put("eid", resultSet.getString("eid"));
                 event.put("ename", resultSet.getString("ename"));
                 event.put("ediscription", resultSet.getString("ediscription"));
                 event.put("edate", resultSet.getString("edate"));
                 event.put("eplace", resultSet.getString("eplace"));
-                elist.add(event);
+                events.add(event);
             }
 
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(resp.getOutputStream(), elist);
+            resp.getWriter().write(mapper.writeValueAsString(events));
+            resp.setStatus(HttpServletResponse.SC_OK);
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (ClassNotFoundException | SQLException e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"Failed to fetch events\"}");
         }
     }
 }
