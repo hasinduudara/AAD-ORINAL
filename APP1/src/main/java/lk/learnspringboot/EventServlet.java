@@ -57,4 +57,49 @@ public class EventServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        resp.setContentType("application/json");
+
+        try {
+            // Get form data
+            String eid = req.getParameter("eventId");
+            String ename = req.getParameter("eventName");
+            String ediscription = req.getParameter("eventDescription");
+            String edate = req.getParameter("eventDate");
+            String eplace = req.getParameter("eventPlace");
+
+            // Database connection
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb",
+                    "root",
+                    "hasindu12345");
+
+            // Insert query
+            String query = "INSERT INTO event (eid, ename, ediscription, edate, eplace) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, eid);
+            statement.setString(2, ename);
+            statement.setString(3, ediscription);
+            statement.setString(4, edate);
+            statement.setString(5, eplace);
+
+            int result = statement.executeUpdate();
+
+            if (result > 0) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+                resp.getWriter().write("{\"message\": \"Event saved successfully\"}");
+            } else {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("{\"error\": \"Failed to save event\"}");
+            }
+
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("{\"error\": \"Error saving event: " + e.getMessage() + "\"}");
+        }
+    }
 }

@@ -157,6 +157,46 @@
     });
   }
 
+  function saveEvent() {
+    const eventData = {
+      eventId: $('#eventId').val(),
+      eventName: $('#eventName').val(),
+      eventDescription: $('#eventDescription').val(),
+      eventDate: $('#eventDate').val(),
+      eventPlace: $('#eventPlace').val()
+    };
+
+    // Validate form
+    if (!eventData.eventId || !eventData.eventName || !eventData.eventDescription || 
+        !eventData.eventDate || !eventData.eventPlace) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    $.ajax({
+      url: 'http://localhost:8080/APP1_war_exploded/event',
+      type: 'POST',
+      data: eventData,
+      success: function(response) {
+        alert('Event saved successfully');
+        clearForm();
+        fetchEvents(); // Refresh the table
+      },
+      error: function(error) {
+        console.error('Error saving event:', error);
+        alert('Failed to save event');
+      }
+    });
+  }
+
+  function clearForm() {
+    $('#eventId').val('');
+    $('#eventName').val('');
+    $('#eventDescription').val('');
+    $('#eventDate').val('');
+    $('#eventPlace').val('');
+  }
+
   // Call fetchEvents on page load
   $(document).ready(function() {
     fetchEvents();
