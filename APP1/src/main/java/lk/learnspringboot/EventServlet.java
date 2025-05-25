@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -111,11 +112,17 @@ public class EventServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            String eid = req.getParameter("eventId");
-            String ename = req.getParameter("eventName");
-            String ediscription = req.getParameter("eventDescription");
-            String edate = req.getParameter("eventDate");
-            String eplace = req.getParameter("eventPlace");
+            // Manual parameter parsing for PUT requests
+            Map<String, String> paramMap = getParametersFromRequest(req);
+
+            String eid = paramMap.get("eventId");
+            String ename = paramMap.get("eventName");
+            String ediscription = paramMap.get("eventDescription");
+            String edate = paramMap.get("eventDate");
+            String eplace = paramMap.get("eventPlace");
+
+            // Debug output
+            System.out.println("PUT parameters: " + paramMap);
 
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb", "root", "hasindu12345");
@@ -152,7 +159,12 @@ public class EventServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
-            String eid = req.getParameter("eventId");
+            // Manual parameter parsing for DELETE requests
+            Map<String, String> paramMap = getParametersFromRequest(req);
+            String eid = paramMap.get("eventId");
+
+            // Debug output
+            System.out.println("DELETE parameter eventId: " + eid);
 
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/eventdb", "root", "hasindu12345");
@@ -175,6 +187,56 @@ public class EventServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.getWriter().write("{\"error\": \"Error deleting event: " + e.getMessage() + "\"}");
         }
+    }
+
+    // Helper method to read parameters from request body
+    private Map<String, String> getParametersFromRequest(HttpServletRequest req) throws IOException {
+        Map<String, String> paramMap = new HashMap<>();
+
+        // Try standard parameter method first
+        Map<String, String[]> parameterMap = req.getParameterMap();
+        if (!parameterMap.isEmpty()) {
+            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+                if (entry.getValue() != null && entry.getValue().length > 0) {
+                    paramMap.put(entry.getKey(), entry.getValue()[0]);
+                }
+            }
+            return paramMap;
+        }
+
+        // If no parameters found, try reading from the request body
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try (BufferedReader reader = req.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        }
+
+        String body = sb.toString();
+        if (body != null && !body.isEmpty()) {
+            // Parse parameters from request body
+            String[] pairs = body.split("&");
+            for (String pair : pairs) {
+                int idx = pair.indexOf("=");
+                if (idx > 0) {
+                    String key = java.net.URLDecoder.decode(pair.substring(0, idx), "UTF-8");
+                    String value = java.net.URLDecoder.decode(pair.substring(idx + 1), "UTF-8");
+                    paramMap.put(key, value);
+                }
+            }
+        }
+
+        return paramMap;
+    }
+
+    // Add this method to handle OPTIONS requests for CORS
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
 }

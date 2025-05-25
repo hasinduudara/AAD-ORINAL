@@ -205,16 +205,20 @@
       return;
     }
 
+    // Convert data to URL parameters
+    const params = $.param(eventData);
+
     $.ajax({
-      url: `http://localhost:8080/APP1_war_exploded/event?eventId=${eventData.eventId}`,
+      url: 'http://localhost:8080/APP1_war_exploded/event',
       type: 'PUT',
-      data: eventData,
-      success: function (response) {
+      contentType: 'application/x-www-form-urlencoded',
+      data: params,
+      success: function(response) {
         alert('Event updated successfully');
         clearForm();
         fetchEvents();
       },
-      error: function (error) {
+      error: function(error) {
         console.error('Error updating event:', error);
         alert('Failed to update event');
       }
@@ -231,14 +235,16 @@
     }
 
     $.ajax({
-      url: `http://localhost:8080/APP1_war_exploded/event?eventId=${eventId}`,
+      url: 'http://localhost:8080/APP1_war_exploded/event',
       type: 'DELETE',
-      success: function (response) {
+      data: { eventId: eventId },
+      contentType: 'application/x-www-form-urlencoded',
+      success: function(response) {
         alert('Event deleted successfully');
         clearForm();
         fetchEvents();
       },
-      error: function (error) {
+      error: function(error) {
         console.error('Error deleting event:', error);
         alert('Failed to delete event');
       }
