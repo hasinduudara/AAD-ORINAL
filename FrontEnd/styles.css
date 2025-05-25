@@ -1,12 +1,12 @@
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-gradient: linear-gradient(135deg, #57b4aa 0%, #24776c 100%);
     --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #8effc5 0%, #3bc4b3 100%);
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
