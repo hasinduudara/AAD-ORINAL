@@ -17,7 +17,6 @@ import java.util.Map;
 
 @WebServlet("/event")
 public class EventServlet extends HttpServlet {
-    // eid, ename, ediscription, edate, eplace
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
