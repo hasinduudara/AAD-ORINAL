@@ -32,8 +32,8 @@ public class EventServlet extends HttpServlet {
                     "hasindu12345");
 
             String query = "SELECT * FROM event";
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
 
             List<Map<String, String>> events = new ArrayList<>();
             while (resultSet.next()) {
@@ -47,12 +47,14 @@ public class EventServlet extends HttpServlet {
             }
 
             ObjectMapper mapper = new ObjectMapper();
-            resp.getWriter().write(mapper.writeValueAsString(events));
+            String jsonResponse = mapper.writeValueAsString(events);
+            resp.getWriter().write(jsonResponse);
             resp.setStatus(HttpServletResponse.SC_OK);
 
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (Exception e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\": \"Failed to fetch events\"}");
+            resp.getWriter().write("{\"error\": \"Error fetching events: " + e.getMessage() + "\"}");
         }
     }
+
 }

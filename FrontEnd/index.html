@@ -129,33 +129,38 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
-  $(document).ready(function() {
-    fetchEvents();
-  });
-
   function fetchEvents() {
     $.ajax({
       url: 'http://localhost:8080/APP1_war_exploded/event',
       type: 'GET',
-      success: function(events) {
-        const tableBody = $('#eventTable');
-        tableBody.empty(); // Clear existing rows
-        events.forEach(event => {
-          const row = `<tr>
-          <td>${event.eid}</td>
-          <td>${event.ename}</td>
-          <td>${event.ediscription}</td>
-          <td>${event.edate}</td>
-          <td>${event.eplace}</td>
-        </tr>`;
-          tableBody.append(row);
+      success: function(response) {
+        const eventTable = $('#eventTable');
+        eventTable.empty(); // Clear existing rows
+
+        response.forEach(event => {
+          const row = `
+            <tr>
+              <td>${event.eid}</td>
+              <td>${event.ename}</td>
+              <td>${event.ediscription}</td>
+              <td>${event.edate}</td>
+              <td>${event.eplace}</td>
+            </tr>
+          `;
+          eventTable.append(row);
         });
       },
-      error: function(err) {
-        console.error('Error fetching events:', err);
+      error: function(error) {
+        console.error('Error fetching events:', error);
+        alert('Failed to fetch events');
       }
     });
   }
+
+  // Call fetchEvents on page load
+  $(document).ready(function() {
+    fetchEvents();
+  });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
