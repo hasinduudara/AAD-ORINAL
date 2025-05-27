@@ -24,6 +24,11 @@
         <webroots>
           <root url="file://$MODULE_DIR$/APP1/web" relative="/" />
         </webroots>
+        <sourceRoots>
+          <root url="file://$MODULE_DIR$/APP1/src/main/java" />
+          <root url="file://$MODULE_DIR$/APP1/src/main/resources" />
+          <root url="file://$MODULE_DIR$/APP1/target/generated-sources/annotations" />
+        </sourceRoots>
       </configuration>
     </facet>
   </component>

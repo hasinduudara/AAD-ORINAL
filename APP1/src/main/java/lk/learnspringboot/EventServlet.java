@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,18 @@ import java.util.Map;
 
 @WebServlet("/event")
 public class EventServlet extends HttpServlet {
+
+    private BasicDataSource basicDataSource;
+    @Override
+    public void init() throws ServletException {
+        basicDataSource = new BasicDataSource();
+        basicDataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        basicDataSource.setUrl("jdbc:mysql://localhost:3306/eventdb");
+        basicDataSource.setUsername("root");
+        basicDataSource.setPassword("hasindu12345");
+        basicDataSource.setInitialSize(5);
+        basicDataSource.setMaxTotal(50);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
